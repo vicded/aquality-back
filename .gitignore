@@ -1,0 +1,12 @@
+# Ignore Node.js modules
+node_modules/
+
+# Ignore npm logs
+npm-debug.log
+yarn-error.log
+
+# Ignore environment variables file
+.env
+
+# Ignore package-lock.json
+package-lock.json
