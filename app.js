@@ -112,6 +112,25 @@ function getMonthlyAverage(month) {
     });
 }
 
+function getEventsByDateRange(startDate, endDate) {
+    console.log('start date', startDate);
+    console.log('endDate', endDate);
+
+    return new Promise (data => {
+        db.query({sql: 'SELECT se.ph, se.tds, se.turbidity, se.temperature, se.date_entered FROM station_events se WHERE DATE(se.date_entered) BETWEEN ? AND ? ORDER BY date_entered DESC;', typeCast: true}, [startDate, endDate], function(error, result) {
+            if (error) {
+                throw error;
+            }
+            try {
+                data(result);
+            } catch (error){
+                data({});
+                throw error;
+            }
+        });
+    });
+}
+
 
 function emitLatestEvent(latestEvent) {
     io.emit('periodicData', latestEvent);
@@ -188,6 +207,17 @@ app.get('/monthly_average', async (req, res) => {
     res.json(monthlyAverage[0])
 
 })
+
+app.get('/events', async (req, res) => {
+    const startDate = req.query.start;
+    const endDate = req.query.end;
+
+    console.log('date', startDate, endDate);
+    const events = await getEventsByDateRange(startDate, endDate);
+
+    console.log('latest', events);
+    res.json(events);
+});
 
 const port = 3001;
 
