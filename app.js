@@ -45,7 +45,7 @@ function dbQuery(databaseQuery) {
         console.log('date creation', todayDate);
         todayDate = todayDate.toISOString().split('T')[0];
         console.log('today', todayDate);
-        todayDate = '2023-09-06';
+        //todayDate = '2023-09-06';
         console.log('TODAY DATEEEEe', todayDate);
         db.query(databaseQuery, todayDate, function (error, result) { // change db->connection for your code
             if (error) {
@@ -65,7 +65,7 @@ function dbQuery(databaseQuery) {
 
 function getLatestEvent() {
     return new Promise (data => {
-        db.query({sql: 'SELECT s.station_name, se.ph, se.tds, se.turbidity, se.temperature, se.date_entered FROM station_events se JOIN stations s ON s.device_mac = se.mac ORDER BY se.date_entered DESC LIMIT 2', typeCast: true}, function(error, result) {
+        db.query({sql: 'SELECT s.station_name, se.ph, se.ec, se.tds, se.turbidity, se.temperature, se.date_entered FROM station_events se JOIN stations s ON s.device_mac = se.mac ORDER BY se.date_entered DESC LIMIT 2', typeCast: true}, function(error, result) {
             if (error) {
                 throw error;
             }
@@ -81,7 +81,7 @@ function getLatestEvent() {
 
 function getDayAverage(date) {
     return new Promise (data => {
-        db.query({sql: 'SELECT AVG(se.ph) as ph_avg, AVG(se.tds) as tds_avg, AVG(se.turbidity) as turbidity_avg, AVG(temperature) as temperature_avg FROM station_events se WHERE DATE(date_entered) = ?', typeCast: true}, date, function(error, result) {
+        db.query({sql: 'SELECT AVG(se.ph) as ph_avg, AVG(se.ec) as ec_avg, AVG(se.tds) as tds_avg, AVG(se.turbidity) as turbidity_avg, AVG(temperature) as temperature_avg FROM station_events se WHERE DATE(date_entered) = ?', typeCast: true}, date, function(error, result) {
             if (error) {
                 throw error;
             }
@@ -98,7 +98,7 @@ function getDayAverage(date) {
 function getMonthlyAverage(month) {
     console.log('month method', month);
     return new Promise (data => {
-        db.query({sql: 'SELECT AVG(se.ph) as ph_avg, AVG(se.tds) as tds_avg, AVG(se.turbidity) as turbidity_avg, AVG(temperature) as temperature_avg FROM station_events se WHERE MONTH(date_entered) = ?', typeCast: true}, month, function(error, result) {
+        db.query({sql: 'SELECT AVG(se.ph) as ph_avg, AVG(se.ec) as ec_avg, AVG(se.tds) as tds_avg, AVG(se.turbidity) as turbidity_avg, AVG(temperature) as temperature_avg FROM station_events se WHERE MONTH(date_entered) = ?', typeCast: true}, month, function(error, result) {
             if (error) {
                 throw error;
             }
@@ -117,7 +117,7 @@ function getEventsByDateRange(startDate, endDate) {
     console.log('endDate', endDate);
 
     return new Promise (data => {
-        db.query({sql: 'SELECT se.ph, se.tds, se.turbidity, se.temperature, se.date_entered FROM station_events se WHERE DATE(se.date_entered) BETWEEN ? AND ? ORDER BY date_entered DESC;', typeCast: true}, [startDate, endDate], function(error, result) {
+        db.query({sql: 'SELECT se.ph, se.ec, se.tds, se.turbidity, se.temperature, se.date_entered FROM station_events se WHERE DATE(se.date_entered) BETWEEN ? AND ? ORDER BY date_entered DESC;', typeCast: true}, [startDate, endDate], function(error, result) {
             if (error) {
                 throw error;
             }
